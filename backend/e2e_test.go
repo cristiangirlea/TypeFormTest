@@ -13,7 +13,7 @@ import (
 
 func setupE2ETestServer() *httptest.Server {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", h.Health)

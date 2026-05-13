@@ -42,6 +42,8 @@ func NewSQLiteStore(dbPath string) (*SQLiteStore, error) {
 			answers TEXT,
 			created_at DATETIME
 		);
+		CREATE INDEX IF NOT EXISTS idx_forms_share_slug ON forms(share_slug);
+		CREATE INDEX IF NOT EXISTS idx_responses_form_id ON responses(form_id);
 	`)
 	if err != nil {
 		return nil, err
@@ -101,7 +103,7 @@ func (s *SQLiteStore) ListForms(ctx context.Context) ([]*models.Form, error) {
 	}
 	defer rows.Close()
 
-	var forms []*models.Form
+	forms := []*models.Form{}
 	for rows.Next() {
 		var f models.Form
 		var qs string

@@ -12,10 +12,11 @@ import (
 
 type Handler struct {
 	Store store.Store
+	Cache *store.Cache
 }
 
-func NewHandler(s store.Store) *Handler {
-	return &Handler{Store: s}
+func NewHandler(s store.Store, c *store.Cache) *Handler {
+	return &Handler{Store: s, Cache: c}
 }
 
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
@@ -72,6 +73,11 @@ func (h *Handler) AddQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Invalidate cache if exists
+	if form.ShareSlug != "" {
+		h.Cache.InvalidateFormBySlug(r.Context(), form.ShareSlug)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(q)
@@ -101,6 +107,11 @@ func (h *Handler) SaveForm(w http.ResponseWriter, r *http.Request) {
 	if err := h.Store.UpdateForm(r.Context(), form); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// Invalidate cache if exists
+	if form.ShareSlug != "" {
+		h.Cache.InvalidateFormBySlug(r.Context(), form.ShareSlug)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -145,13 +156,26 @@ func (h *Handler) GetFormBySlug(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Try cache first
+	if form, err := h.Cache.GetFormBySlug(r.Context(), slug); err == nil && form != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-Cache", "HIT")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(form)
+		return
+	}
+
 	form, err := h.Store.GetFormBySlug(r.Context(), slug)
 	if err != nil {
 		http.Error(w, "form not found", http.StatusNotFound)
 		return
 	}
 
+	// Save to cache
+	h.Cache.SetFormBySlug(r.Context(), slug, form)
+
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("X-Cache", "MISS")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(form)
 }

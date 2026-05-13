@@ -43,7 +43,7 @@ export default function Builder({ params }: { params: Promise<{ id: string }> })
   if (!form) return <div className="p-8">Loading...</div>;
 
   return (
-    <main className="p-8 max-w-4xl mx-auto text-black">
+    <main className="p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{form.title} (Builder)</h1>
         <Link href="/" className="text-blue-500 hover:underline">Back to List</Link>
@@ -52,12 +52,12 @@ export default function Builder({ params }: { params: Promise<{ id: string }> })
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Questions</h2>
         <div className="space-y-2 mb-4">
-          {form.questions.map((q, i) => (
-            <div key={q.id} className="border p-3 rounded bg-gray-50">
+          {form.questions?.map((q, i) => (
+            <div key={q.id} className="border border-border-theme p-3 rounded bg-card">
               {i + 1}. {q.text}
             </div>
           ))}
-          {form.questions.length === 0 && <p className="text-gray-400">No questions yet. Add one below.</p>}
+          {(form.questions?.length || 0) === 0 && <p className="text-gray-400">No questions yet. Add one below.</p>}
         </div>
 
         <form onSubmit={handleAddQuestion} className="flex gap-4">
@@ -66,25 +66,25 @@ export default function Builder({ params }: { params: Promise<{ id: string }> })
             value={newQuestion} 
             onChange={e => setNewQuestion(e.target.value)}
             placeholder="Question Text"
-            className="border p-2 rounded flex-1 text-black bg-white"
+            className="border border-border-theme p-2 rounded flex-1 bg-background text-foreground"
           />
-          <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded font-medium">Add Question</button>
+          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded font-medium hover:bg-green-700 transition cursor-pointer">Add Question</button>
         </form>
       </section>
 
-      <section className="border-t pt-8">
+      <section className="border-t border-border-theme pt-8">
         <button 
           onClick={handleSave} 
-          className="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition cursor-pointer"
         >
           Save & Generate Link
         </button>
         {error && <p className="text-red-500 mt-2 font-medium">{error}</p>}
         
         {form.shareSlug && (
-          <div className="mt-4 p-4 bg-green-100 rounded border border-green-200">
-            <p className="font-semibold text-green-800">Form Saved!</p>
-            <p className="text-green-700">Shareable URL: 
+          <div className="mt-4 p-4 bg-green-100 dark:bg-green-900/30 rounded border border-green-200 dark:border-green-800">
+            <p className="font-semibold text-green-800 dark:text-green-300">Form Saved!</p>
+            <p className="text-green-700 dark:text-green-400">Shareable URL: 
               <Link href={`/form/${form.shareSlug}`} className="underline ml-2 font-mono">
                 /form/{form.shareSlug}
               </Link>

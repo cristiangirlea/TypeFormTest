@@ -12,11 +12,32 @@ import (
 
 func main() {
 	cfg := config.Load()
-	s, err := store.NewSQLiteStore(cfg.DBPath)
-	if err != nil {
-		log.Fatalf("could not initialize store: %v", err)
+
+	var s store.Store
+	var err error
+
+	if cfg.DBDriver == "postgres" {
+		s, err = store.NewPostgresStore(cfg.DBURL)
+		if err != nil {
+			log.Fatalf("could not initialize postgres store: %v", err)
+		}
+		log.Printf("Using PostgreSQL store")
+	} else {
+		s, err = store.NewSQLiteStore(cfg.DBPath)
+		if err != nil {
+			log.Fatalf("could not initialize sqlite store: %v", err)
+		}
+		log.Printf("Using SQLite store at %s", cfg.DBPath)
 	}
-	h := handlers.NewHandler(s)
+
+	c := store.NewCache(cfg.RedisURL)
+	if c != nil {
+		log.Printf("Redis cache enabled at %s", cfg.RedisURL)
+	} else {
+		log.Printf("Redis cache disabled")
+	}
+
+	h := handlers.NewHandler(s, c)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", h.Health)

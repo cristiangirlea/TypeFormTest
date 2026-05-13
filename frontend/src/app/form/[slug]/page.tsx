@@ -43,15 +43,15 @@ export default function Renderer({ params }: { params: Promise<{ slug: string }>
     }
   };
 
-  if (loading) return <div className="p-8 text-black">Loading...</div>;
-  if (!form) return <div className="p-8 text-black">Form not found</div>;
+  if (loading) return <div className="p-8">Loading...</div>;
+  if (!form) return <div className="p-8">Form not found</div>;
 
   if (isFinished) {
     return (
-      <main className="h-screen flex items-center justify-center p-8 bg-zinc-50">
+      <main className="h-screen flex items-center justify-center p-8 bg-background">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4 text-black">Thank You!</h1>
-          <p className="text-gray-600 mb-8 text-lg font-medium">Your responses have been saved.</p>
+          <h1 className="text-4xl font-bold mb-4">Thank You!</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg font-medium">Your responses have been saved.</p>
           <Link href="/" className="text-blue-500 hover:underline">Create your own form</Link>
         </div>
       </main>
@@ -61,7 +61,7 @@ export default function Renderer({ params }: { params: Promise<{ slug: string }>
   const question = form.questions[currentIdx];
 
   return (
-    <main className="h-screen flex items-center justify-center p-8 bg-zinc-50 text-black">
+    <main className="h-screen flex items-center justify-center p-8 bg-background">
       <div className="max-w-xl w-full">
         <p className="text-gray-400 mb-2 font-medium italic">Question {currentIdx + 1} of {form.questions.length}</p>
         <h2 className="text-3xl font-bold mb-8">{question.text}</h2>
@@ -79,11 +79,11 @@ export default function Renderer({ params }: { params: Promise<{ slug: string }>
         <div className="mt-8 flex justify-between items-center">
           <button 
             onClick={handleNext}
-            className="bg-blue-600 text-white px-8 py-3 rounded text-lg font-bold shadow-lg hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-8 py-3 rounded text-lg font-bold shadow-lg hover:bg-blue-700 transition cursor-pointer"
           >
             {currentIdx === form.questions.length - 1 ? 'Finish' : 'Next'}
           </button>
-          <span className="text-gray-400 text-sm font-medium">Press Enter ↵</span>
+          <span className="text-gray-400 dark:text-gray-500 text-sm font-medium">Press Enter ↵</span>
         </div>
       </div>
     </main>

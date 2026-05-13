@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <main className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-black">My Forms</h1>
+      <h1 className="text-3xl font-bold mb-8">My Forms</h1>
       
       <form onSubmit={handleCreate} className="mb-12 flex gap-4">
         <input 
@@ -33,17 +33,17 @@ export default function Home() {
           value={title} 
           onChange={e => setTitle(e.target.value)}
           placeholder="New Form Title"
-          className="border p-2 rounded flex-1 text-black"
+          className="border border-border-theme p-2 rounded flex-1 bg-background text-foreground"
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Create Form</button>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition cursor-pointer">Create Form</button>
       </form>
 
       <div className="grid gap-4">
-        {forms.map(form => (
-          <div key={form.id} className="border p-4 rounded flex justify-between items-center bg-white text-black">
+        {forms?.map(form => (
+          <div key={form.id} className="border border-border-theme p-4 rounded flex justify-between items-center bg-card">
             <div>
               <h2 className="text-xl font-semibold">{form.title}</h2>
-              <p className="text-gray-500">{form.questions?.length || 0} questions</p>
+              <p className="text-gray-500 dark:text-gray-400">{form.questions?.length || 0} questions</p>
             </div>
             <div className="flex gap-4">
               <Link href={`/builder/${form.id}`} className="text-blue-500 hover:underline">Edit Builder</Link>

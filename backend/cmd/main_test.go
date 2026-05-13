@@ -13,7 +13,7 @@ import (
 
 func TestHealthHandler(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 
 	req, err := http.NewRequest("GET", "/health", nil)
 	if err != nil {
@@ -39,7 +39,7 @@ func TestHealthHandler(t *testing.T) {
 
 func TestCreateForm(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 
 	payload := `{"title": "My New Form"}`
 	req, _ := http.NewRequest("POST", "/forms", strings.NewReader(payload))
@@ -60,7 +60,7 @@ func TestCreateForm(t *testing.T) {
 
 func TestAddQuestion(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /forms/{id}/questions", h.AddQuestion)
 
@@ -86,7 +86,7 @@ func TestAddQuestion(t *testing.T) {
 
 func TestSaveForm(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /forms/{id}/save", h.SaveForm)
 
@@ -117,7 +117,7 @@ func TestSaveForm(t *testing.T) {
 
 func TestSaveFormNoQuestions(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /forms/{id}/save", h.SaveForm)
 
@@ -136,7 +136,7 @@ func TestSaveFormNoQuestions(t *testing.T) {
 
 func TestListForms(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /forms", h.ListForms)
 
@@ -161,7 +161,7 @@ func TestListForms(t *testing.T) {
 
 func TestGetFormBySlug(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /form/{slug}", h.GetFormBySlug)
 
@@ -185,7 +185,7 @@ func TestGetFormBySlug(t *testing.T) {
 
 func TestSubmitResponse(t *testing.T) {
 	s := store.NewMemoryStore()
-	h := handlers.NewHandler(s)
+	h := handlers.NewHandler(s, nil)
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /form/{slug}/responses", h.SubmitResponse)
 
