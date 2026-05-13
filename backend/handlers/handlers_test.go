@@ -158,6 +158,30 @@ func TestListForms(t *testing.T) {
 	}
 }
 
+func TestGetForm(t *testing.T) {
+	s := store.NewMemoryStore()
+	h := NewHandler(s, nil)
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /forms/{id}", h.GetForm)
+
+	s.CreateForm(t.Context(), &models.Form{ID: "f1", Title: "Form 1"})
+
+	req, _ := http.NewRequest("GET", "/forms/f1", nil)
+	rr := httptest.NewRecorder()
+
+	mux.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+
+	var form models.Form
+	json.Unmarshal(rr.Body.Bytes(), &form)
+	if form.ID != "f1" {
+		t.Errorf("expected form ID f1, got %s", form.ID)
+	}
+}
+
 func TestGetFormBySlug(t *testing.T) {
 	s := store.NewMemoryStore()
 	h := NewHandler(s, nil)

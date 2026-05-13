@@ -96,6 +96,28 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 - `GET /form/{slug}` - Get form details by shareable slug
 - `POST /form/{slug}/responses` - Submit a form response
 
+## Testing (TDD)
+
+The project follows TDD principles and includes a comprehensive test suite for the backend.
+
+### Backend Tests
+Includes unit tests for handlers, stores (SQLite, Postgres, Memory), caching logic, and configuration, as well as E2E integration tests.
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Run all tests:
+   ```bash
+   go test -v ./...
+   ```
+3. Run tests with coverage:
+   ```bash
+   go test -v -cover ./...
+   ```
+
+*Note: Some tests (Postgres/Redis) will automatically skip if the services are not reachable on localhost.*
+
 ## Scaling to 50,000+ Concurrent Users
 
 To handle 50,000+ users "instantly," the current architecture can be scaled as follows:
