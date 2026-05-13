@@ -1,0 +1,7 @@
+vendor
+data/*.db
+data/*.db-journal
+bin
+tmp
+.git
+.air.toml
