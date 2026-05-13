@@ -136,3 +136,32 @@ The application now includes a Redis caching layer for the public form renderer.
 - **Look-aside Caching**: The backend checks Redis before querying the database for form definitions by slug.
 - **Cache Invalidation**: The cache is automatically invalidated when a form is updated or a new question is added.
 - **Performance**: Serving from Redis allows the application to handle massive spikes in form views with sub-millisecond latency.
+
+## Load Testing (Testing 50,000+ Connections)
+
+To verify the "High Concurrency" capabilities, a custom load testing tool is provided in `backend/cmd/loadtest`.
+
+### Running a Local Test
+This test simulates multiple concurrent users hitting the cached form endpoint.
+
+1.  Identify a valid form slug (e.g., `test-slug`).
+2.  Run the load test (from the `backend` directory):
+    ```bash
+    go run cmd/loadtest/main.go -url http://localhost:8080/form/test-slug -c 500 -d 10s
+    ```
+    - `-c`: Concurrency (number of workers).
+    - `-d`: Duration.
+
+**Important Note on Concurrency Limits**: 
+On Windows, running at very high concurrency (e.g., `-c 1000`) can cause a "Thread Exhaustion" panic in the load tester due to OS ephemeral port limits. The provided `loadtest` tool includes a small backoff and tuned connection pooling to mitigate this, but for testing beyond 1,000 concurrent users, distributed testing is recommended.
+
+### Scaling to 50,000 Concurrent Connections
+A single machine often hits OS-level limits when trying to open 50k *outgoing* connections. To achieve a 50k connection test:
+
+1.  **Distributed Testing**: Use a tool like **Locust**, **k6**, or run the provided `loadtest` script from **5-10 different machines** simultaneously.
+2.  **OS Tuning (Load Generator)**:
+    - **Windows**: Increase `MaxUserPort` in the registry.
+    - **Linux**: Increase ephemeral port range: `echo "1024 65535" > /proc/sys/net/ipv4/ip_local_port_range` and increase file limits `ulimit -n 65535`.
+3.  **Server-Side Tuning**:
+    - Ensure the backend is running with `ulimit -n 65535`.
+    - Use a Load Balancer (like Nginx) to distribute traffic across multiple backend instances.
